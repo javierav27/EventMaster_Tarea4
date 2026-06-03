@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">EventMaster</string>
+    <string name="add_category_title">Nueva categoría</string>
+    <string name="add_event_title">Nuevo evento</string>
+    <string name="event_detail_title">Detalle del evento</string>
+    <string name="category_name_label">Nombre de la categoría</string>
+    <string name="category_name_error">El nombre no puede estar vacío</string>
+    <string name="event_name_label">Nombre del evento</string>
+    <string name="event_date_label">Fecha (AAAA-MM-DD)</string>
+    <string name="event_description_label">Descripción</string>
+    <string name="field_required">Campo obligatorio</string>
+    <string name="save">Guardar</string>
+    <string name="home">Inicio</string>
+    <string name="categories">Categorías</string>
+    <string name="add_event">Agregar evento</string>
+
+</resources>
