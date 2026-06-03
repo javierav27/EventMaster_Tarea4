@@ -9,7 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.eventmaster.data.model.Event
+import com.example.eventmaster.models.Event
 
 @Composable
 fun EventCard(event: Event, onClick: () -> Unit) {

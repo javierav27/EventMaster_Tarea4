@@ -25,7 +25,7 @@ class EventMasterViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    // Observar todos los eventos (si es necesario tener la lista completa)
+    // Observar todos los eventos
     val events: StateFlow<List<Event>> = repository.allEvents
         .stateIn(
             scope = viewModelScope,
@@ -34,13 +34,11 @@ class EventMasterViewModel @Inject constructor(
         )
 
     init {
-        // Podrías inicializar datos aquí si la base de datos está vacía, 
-        // pero lo ideal es usar un Callback en el DatabaseModule o un Worker.
-        // Por ahora, mantengamos la lógica de inserción inicial si es necesario,
-        // pero comentada para no duplicar datos cada vez que se crea el ViewModel.
+        // inicializar datos aquí si la base de datos está vacía,
+
         /*
         viewModelScope.launch {
-            // Ejemplo de cómo podrías insertar datos iniciales una sola vez
+            // Ejemplo de cómo insertar datos iniciales una sola vez
             // if (repository.allCategories.first().isEmpty()) { ... }
         }
         */
@@ -60,7 +58,7 @@ class EventMasterViewModel @Inject constructor(
         }
     }
 
-    // Para obtener eventos por categoría de forma reactiva en la UI
+    // Para obtener eventos por categoría
     fun getEventsByCategory(categoryId: String): StateFlow<List<Event>> {
         return repository.getEventsByCategory(categoryId)
             .stateIn(

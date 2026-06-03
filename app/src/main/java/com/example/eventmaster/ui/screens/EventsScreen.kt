@@ -38,7 +38,8 @@ fun EventsScreen(
     val events by eventsStateFlow.collectAsState()
     
     val categories by viewModel.categories.collectAsState()
-    val categoryName = categories.find { it.id == categoryId }?.name ?: "Eventos"
+    // Se corrige la comparación convirtiendo el id (Int) a String para que coincida con categoryId
+    val categoryName = categories.find { it.id.toString() == categoryId }?.name ?: "Eventos"
 
     Scaffold(
         topBar = {
@@ -72,7 +73,8 @@ fun EventsScreen(
                 }
             } else {
                 items(events) { event ->
-                    EventCard(event = event, onClick = { onEventClick(event.id) })
+                    // Se convierte el id (Int) a String para que coincida con la firma de onEventClick
+                    EventCard(event = event, onClick = { onEventClick(event.id.toString()) })
                 }
             }
         }

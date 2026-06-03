@@ -1,4 +1,3 @@
-
 package com.example.eventmaster.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -7,7 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.eventmaster.data.model.EventRequest
+import com.example.eventmaster.models.EventRequest
+import com.example.eventmaster.models.Category
 import com.example.eventmaster.ui.viewmodels.CategoryViewModel
 import com.example.eventmaster.ui.viewmodels.EventViewModel
 import java.time.LocalDate
@@ -28,7 +28,7 @@ fun AddEventScreen(
     var showError by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Nuevo Evento") }) }
+        topBar = { @OptIn(ExperimentalMaterial3Api::class) TopAppBar(title = { Text("Nuevo Evento") }) }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
             OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nombre") })
@@ -49,15 +49,19 @@ fun AddEventScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
                 if (selectedCategoryId != null && name.isNotBlank() && description.isNotBlank() && date.isNotBlank() && location.isNotBlank()) {
-                    val eventRequest = EventRequest(
-                        name = name,
-                        description = description,
-                        date = LocalDate.parse(date, DateTimeFormatter.ISO_DATE),
-                        location = location,
-                        category_id = selectedCategoryId!!
-                    )
-                    eventViewModel.createEvent(eventRequest) {
-                        onEventCreated()
+                    try {
+                        val eventRequest = EventRequest(
+                            name = name,
+                            description = description,
+                            date = date,
+                            location = location,
+                            category_id = selectedCategoryId!!
+                        )
+                        eventViewModel.createEvent(eventRequest) {
+                            onEventCreated()
+                        }
+                    } catch (e: Exception) {
+                        showError = true
                     }
                 } else {
                     showError = true
@@ -72,8 +76,9 @@ fun AddEventScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownMenuBox(selectedCategoryId: Int?, categories: List<com.example.eventmaster.data.model.Category>, onCategorySelected: (Int) -> Unit) {
+fun DropdownMenuBox(selectedCategoryId: Int?, categories: List<Category>, onCategorySelected: (Int) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     val selectedCategory = categories.find { it.id == selectedCategoryId }
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
@@ -82,7 +87,8 @@ fun DropdownMenuBox(selectedCategoryId: Int?, categories: List<com.example.event
             onValueChange = {},
             readOnly = true,
             label = { Text("Categoría") },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier.menuAnchor()
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             categories.forEach { category ->

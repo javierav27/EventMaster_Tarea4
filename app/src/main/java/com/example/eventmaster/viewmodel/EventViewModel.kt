@@ -3,8 +3,8 @@ package com.example.eventmaster.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.eventmaster.data.model.Event
-import com.example.eventmaster.data.model.EventRequest
+import com.example.eventmaster.models.Event
+import com.example.eventmaster.models.EventRequest
 import com.example.eventmaster.data.repository.EventRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

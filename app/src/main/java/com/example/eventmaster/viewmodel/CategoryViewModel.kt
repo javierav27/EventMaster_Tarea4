@@ -3,7 +3,7 @@ package com.example.eventmaster.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.eventmaster.data.model.Category
+import com.example.eventmaster.models.Category
 import com.example.eventmaster.data.repository.CategoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

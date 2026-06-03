@@ -1,4 +1,3 @@
-
 package com.example.eventmaster.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -19,12 +18,12 @@ fun HomeScreen(
     viewModel: EventViewModel = hiltViewModel()
 ) {
     val eventsState by viewModel.eventsState.collectAsState()
-    var groupedEvents by remember { mutableStateOf<Map<String, List<com.example.eventmaster.data.model.Event>>?>(null) }
+    var groupedEvents by remember { mutableStateOf<Map<String, List<com.example.eventmaster.models.Event>>?>(null) }
 
     LaunchedEffect(eventsState) {
         if (eventsState is com.example.eventmaster.ui.viewmodels.EventsUiState.Success) {
             val events = (eventsState as com.example.eventmaster.ui.viewmodels.EventsUiState.Success).events
-            groupedEvents = events.groupBy { it.category.name }
+            groupedEvents = events.groupBy { it.categoryId.toString() } // Using categoryId as Event doesn't have a category object
         }
     }
 
@@ -41,7 +40,7 @@ fun HomeScreen(
                         groupedEvents?.forEach { (category, events) ->
                             item {
                                 Text(
-                                    text = category,
+                                    text = "Category $category",
                                     style = MaterialTheme.typography.titleLarge,
                                     modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                                 )
