@@ -8,10 +8,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.eventmaster.models.EventRequest
 import com.example.eventmaster.models.Category
-import com.example.eventmaster.ui.viewmodels.CategoryViewModel
-import com.example.eventmaster.ui.viewmodels.EventViewModel
+import com.example.eventmaster.viewmodel.CategoryViewModel
+import com.example.eventmaster.viewmodel.EventViewModel
+import com.example.eventmaster.viewmodel.CategoriesUiState
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun AddEventScreen(
@@ -31,46 +31,57 @@ fun AddEventScreen(
         topBar = { @OptIn(ExperimentalMaterial3Api::class) TopAppBar(title = { Text("Nuevo Evento") }) }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
-            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nombre") })
-            OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descripción") })
-            OutlinedTextField(value = date, onValueChange = { date = it }, label = { Text("Fecha (YYYY-MM-DD)") })
-            OutlinedTextField(value = location, onValueChange = { location = it }, label = { Text("Ubicación") })
+            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descripción") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = date, onValueChange = { date = it }, label = { Text("Fecha (YYYY-MM-DD)") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = location, onValueChange = { location = it }, label = { Text("Ubicación") }, modifier = Modifier.fillMaxWidth())
+            
+            Spacer(modifier = Modifier.height(8.dp))
+
             when (categoriesState) {
-                is com.example.eventmaster.ui.viewmodels.CategoriesUiState.Success -> {
-                    val categories = (categoriesState as com.example.eventmaster.ui.viewmodels.CategoriesUiState.Success).categories
+                is CategoriesUiState.Success -> {
+                    val categories = (categoriesState as CategoriesUiState.Success).categories
                     DropdownMenuBox(
                         selectedCategoryId = selectedCategoryId,
                         categories = categories,
                         onCategorySelected = { selectedCategoryId = it }
                     )
                 }
-                else -> CircularProgressIndicator()
+                is CategoriesUiState.Error -> {
+                    Text("Error al cargar categorías", color = MaterialTheme.colorScheme.error)
+                }
+                else -> {
+                    // Carga silenciosa
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-                if (selectedCategoryId != null && name.isNotBlank() && description.isNotBlank() && date.isNotBlank() && location.isNotBlank()) {
-                    try {
-                        val eventRequest = EventRequest(
-                            name = name,
-                            description = description,
-                            date = date,
-                            location = location,
-                            category_id = selectedCategoryId!!
-                        )
-                        eventViewModel.createEvent(eventRequest) {
-                            onEventCreated()
+            Button(
+                onClick = {
+                    if (selectedCategoryId != null && name.isNotBlank() && description.isNotBlank() && date.isNotBlank() && location.isNotBlank()) {
+                        try {
+                            val eventRequest = EventRequest(
+                                name = name,
+                                description = description,
+                                date = date,
+                                location = location,
+                                category_id = selectedCategoryId!!
+                            )
+                            eventViewModel.createEvent(eventRequest) {
+                                onEventCreated()
+                            }
+                        } catch (e: Exception) {
+                            showError = true
                         }
-                    } catch (e: Exception) {
+                    } else {
                         showError = true
                     }
-                } else {
-                    showError = true
-                }
-            }) {
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text("Guardar Evento")
             }
             if (showError) {
-                Text("Todos los campos son obligatorios", color = MaterialTheme.colorScheme.error)
+                Text("Todos los campos son obligatorios o error en el servidor", color = MaterialTheme.colorScheme.error)
             }
         }
     }
@@ -88,7 +99,7 @@ fun DropdownMenuBox(selectedCategoryId: Int?, categories: List<Category>, onCate
             readOnly = true,
             label = { Text("Categoría") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor()
+            modifier = Modifier.menuAnchor().fillMaxWidth()
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             categories.forEach { category ->

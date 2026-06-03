@@ -1,5 +1,4 @@
-// ui/viewmodels/EventViewModel.kt
-package com.example.eventmaster.ui.viewmodels
+package com.example.eventmaster.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,6 +21,10 @@ class EventViewModel @Inject constructor(
 
     private val _detailState = MutableStateFlow<EventDetailUiState>(EventDetailUiState.Loading)
     val detailState: StateFlow<EventDetailUiState> = _detailState.asStateFlow()
+
+    init {
+        loadEvents()
+    }
 
     fun loadEvents() {
         viewModelScope.launch {

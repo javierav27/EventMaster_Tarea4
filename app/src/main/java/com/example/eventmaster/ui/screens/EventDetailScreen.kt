@@ -1,4 +1,3 @@
-
 package com.example.eventmaster.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -7,13 +6,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.eventmaster.ui.viewmodels.EventViewModel
+import com.example.eventmaster.viewmodel.EventViewModel
+import com.example.eventmaster.viewmodel.CategoryViewModel
+import com.example.eventmaster.viewmodel.EventDetailUiState
+import com.example.eventmaster.viewmodel.CategoriesUiState
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventDetailScreen(
     eventId: Int,
     eventViewModel: EventViewModel = hiltViewModel(),
-    categoryViewModel: com.example.eventmaster.ui.viewmodels.CategoryViewModel = hiltViewModel()
+    categoryViewModel: CategoryViewModel = hiltViewModel()
 ) {
     val detailState by eventViewModel.detailState.collectAsState()
     val categoriesState by categoryViewModel.uiState.collectAsState()
@@ -27,15 +30,14 @@ fun EventDetailScreen(
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             when (detailState) {
-                is com.example.eventmaster.ui.viewmodels.EventDetailUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+                is EventDetailUiState.Loading -> {
+                    // Círculo de carga eliminado
                 }
-                is com.example.eventmaster.ui.viewmodels.EventDetailUiState.Success -> {
-                    val event = (detailState as com.example.eventmaster.ui.viewmodels.EventDetailUiState.Success).event
+                is EventDetailUiState.Success -> {
+                    val event = (detailState as EventDetailUiState.Success).event
 
-
-                    val categoryName = if (categoriesState is com.example.eventmaster.ui.viewmodels.CategoriesUiState.Success) {
-                        (categoriesState as com.example.eventmaster.ui.viewmodels.CategoriesUiState.Success)
+                    val categoryName = if (categoriesState is CategoriesUiState.Success) {
+                        (categoriesState as CategoriesUiState.Success)
                             .categories.find { it.id == event.categoryId }?.name ?: "Desconocida"
                     } else {
                         "Cargando..."
@@ -43,14 +45,14 @@ fun EventDetailScreen(
 
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(event.name, style = MaterialTheme.typography.headlineSmall)
-                        Text("Categoría: $categoryName") // Usamos el nombre encontrado
+                        Text("Categoría: $categoryName")
                         Text("Fecha: ${event.date}")
                         Text("Ubicación: ${event.location}")
                         Text("Descripción: ${event.description}")
                     }
                 }
-                is com.example.eventmaster.ui.viewmodels.EventDetailUiState.Error -> {
-                    Text("Error: ${(detailState as com.example.eventmaster.ui.viewmodels.EventDetailUiState.Error).message}")
+                is EventDetailUiState.Error -> {
+                    Text("Error: ${(detailState as EventDetailUiState.Error).message}")
                 }
             }
         }

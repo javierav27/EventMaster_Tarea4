@@ -1,4 +1,3 @@
-
 package com.example.eventmaster.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -9,7 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.eventmaster.ui.viewmodels.CategoryViewModel
+import com.example.eventmaster.viewmodel.CategoryViewModel
+import com.example.eventmaster.viewmodel.CategoriesUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,20 +47,20 @@ fun CategoryScreen(
                 Text("El nombre no puede estar vacío", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 16.dp))
             }
             when (uiState) {
-                is com.example.eventmaster.ui.viewmodels.CategoriesUiState.Loading -> {
-                    CircularProgressIndicator()
+                is CategoriesUiState.Loading -> {
+                    // Carga silenciosa
                 }
-                is com.example.eventmaster.ui.viewmodels.CategoriesUiState.Success -> {
+                is CategoriesUiState.Success -> {
                     LazyColumn {
-                        items((uiState as com.example.eventmaster.ui.viewmodels.CategoriesUiState.Success).categories) { category ->
+                        items((uiState as CategoriesUiState.Success).categories) { category ->
                             ListItem(
                                 headlineContent = { Text(category.name) }
                             )
                         }
                     }
                 }
-                is com.example.eventmaster.ui.viewmodels.CategoriesUiState.Error -> {
-                    Text("Error: ${(uiState as com.example.eventmaster.ui.viewmodels.CategoriesUiState.Error).message}")
+                is CategoriesUiState.Error -> {
+                    Text("Error: ${(uiState as CategoriesUiState.Error).message}", modifier = Modifier.padding(16.dp))
                 }
             }
         }

@@ -1,5 +1,4 @@
-// ui/viewmodels/CategoryViewModel.kt
-package com.example.eventmaster.ui.viewmodels
+package com.example.eventmaster.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

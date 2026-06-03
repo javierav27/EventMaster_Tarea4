@@ -9,7 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.eventmaster.ui.components.EventCard
-import com.example.eventmaster.ui.viewmodels.EventViewModel
+import com.example.eventmaster.viewmodel.EventViewModel
+import com.example.eventmaster.viewmodel.EventsUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,39 +22,48 @@ fun HomeScreen(
     var groupedEvents by remember { mutableStateOf<Map<String, List<com.example.eventmaster.models.Event>>?>(null) }
 
     LaunchedEffect(eventsState) {
-        if (eventsState is com.example.eventmaster.ui.viewmodels.EventsUiState.Success) {
-            val events = (eventsState as com.example.eventmaster.ui.viewmodels.EventsUiState.Success).events
-            groupedEvents = events.groupBy { it.categoryId.toString() } // Using categoryId as Event doesn't have a category object
+        if (eventsState is EventsUiState.Success) {
+            val events = (eventsState as EventsUiState.Success).events
+            groupedEvents = events.groupBy { it.categoryId.toString() }
         }
     }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("EventMaster") }) }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+        Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
             when (eventsState) {
-                is com.example.eventmaster.ui.viewmodels.EventsUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+                is EventsUiState.Loading -> {
+                    // Carga silenciosa
                 }
-                is com.example.eventmaster.ui.viewmodels.EventsUiState.Success -> {
-                    LazyColumn(contentPadding = PaddingValues(16.dp)) {
-                        groupedEvents?.forEach { (category, events) ->
-                            item {
-                                Text(
-                                    text = "Category $category",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                                )
-                            }
-                            items(events) { event ->
-                                EventCard(event = event) { onEventClick(event.id) }
-                                Spacer(modifier = Modifier.height(8.dp))
+                is EventsUiState.Success -> {
+                    val events = (eventsState as EventsUiState.Success).events
+                    if (events.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                            Text("No hay eventos disponibles")
+                        }
+                    } else {
+                        LazyColumn(contentPadding = PaddingValues(16.dp)) {
+                            groupedEvents?.forEach { (category, eventsInCategory) ->
+                                item {
+                                    Text(
+                                        text = "Categoría $category",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                                    )
+                                }
+                                items(eventsInCategory) { event ->
+                                    EventCard(event = event) { onEventClick(event.id) }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
                             }
                         }
                     }
                 }
-                is com.example.eventmaster.ui.viewmodels.EventsUiState.Error -> {
-                    Text("Error: ${(eventsState as com.example.eventmaster.ui.viewmodels.EventsUiState.Error).message}")
+                is EventsUiState.Error -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                        Text("Error: ${(eventsState as EventsUiState.Error).message}", color = MaterialTheme.colorScheme.error)
+                    }
                 }
             }
         }

@@ -33,12 +33,12 @@ fun EventsScreen(
     onEventClick: (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    // Usamos remember para mantener la referencia al StateFlow y collectAsState para observar los cambios
+
     val eventsStateFlow = remember(categoryId) { viewModel.getEventsByCategory(categoryId) }
     val events by eventsStateFlow.collectAsState()
     
     val categories by viewModel.categories.collectAsState()
-    // Se corrige la comparación convirtiendo el id (Int) a String para que coincida con categoryId
+
     val categoryName = categories.find { it.id.toString() == categoryId }?.name ?: "Eventos"
 
     Scaffold(
@@ -73,7 +73,7 @@ fun EventsScreen(
                 }
             } else {
                 items(events) { event ->
-                    // Se convierte el id (Int) a String para que coincida con la firma de onEventClick
+
                     EventCard(event = event, onClick = { onEventClick(event.id.toString()) })
                 }
             }
